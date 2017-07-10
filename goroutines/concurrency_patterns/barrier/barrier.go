@@ -1,4 +1,4 @@
-package concurrency_patterns
+package barrier
 
 import (
   "fmt"

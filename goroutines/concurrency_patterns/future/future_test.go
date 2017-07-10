@@ -1,17 +1,28 @@
 package future
 
 import (
-	"errors"
-	"testing"
-	"sync"
+  "errors"
+  "sync"
+  "testing"
+  "time"
 )
 
-func TestStringOrError_Execute(t *testing.T) {
-	future := &MaybeString{}
+/*
+GEMMA BENEITO
+PAPA
+PAPI
+*/
 
-	t.Run("Success result", func (t *testing.T)  {
+func TestStringOrError_Execute(t *testing.T)  {
+  future := &MaybeString{}
+
+  t.Run("Success result", func (t *testing.T)  {
     var wg sync.WaitGroup
     wg.Add(1)
+
+    //Timeout
+    go timeout(t, &wg)
+    /*
     future.Success(func (s string)  {
       t.Log(s)
       wg.Done()
@@ -23,6 +34,7 @@ func TestStringOrError_Execute(t *testing.T) {
       return "Hello World", nil
     })
     wg.Wait()
+    */
   })
 
   t.Run("Failed result", func (t *testing.T)  {
@@ -40,4 +52,33 @@ func TestStringOrError_Execute(t *testing.T) {
     })
     wg.Wait()
   })
+
+  t.Run("Closure Success result", func (t *testing.T)  {
+    var wg sync.WaitGroup
+    wg.Add(1)
+
+    go timeout(t, &wg)
+
+    future.Success(func (s string)  {
+      t.Log(s)
+      wg.Done()
+    }).Fail(func (e error)  {
+      t.Fail()
+      wg.Done()
+    })
+
+    future.Execute(setContext("Hello"))
+
+    wg.Wait()
+
+  })
+
+}
+
+func timeout(t *testing.T, wg *sync.WaitGroup)  {
+  time.Sleep(time.Second)
+  t.Log("Timeout!")
+  t.Fail()
+  wg.Done()
+
 }
