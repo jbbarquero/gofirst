@@ -31,7 +31,7 @@ func LaunchPipeline(amount int) int {
 }
 
 func generator(count int) <-chan int {
-	channelElement := make(chan int)
+	channelElement := make(chan int, 100)
 	go func() {
 		for i := 0; i <= count; i++ {
 			channelElement <- i
@@ -42,7 +42,7 @@ func generator(count int) <-chan int {
 }
 
 func power(count int, in <-chan int) <-chan int {
-	out := make(chan int, count)
+	out := make(chan int, 100)
 	go func() {
 		for v := range in {
 			out <- v * v
@@ -54,8 +54,8 @@ func power(count int, in <-chan int) <-chan int {
 
 func addUpAll(channelNumbers <-chan int) chan int {
 	channelResult := make(chan int)
-	sum := 0
 	go func() {
+		var sum int
 		for number := range channelNumbers {
 			sum += number
 		}
