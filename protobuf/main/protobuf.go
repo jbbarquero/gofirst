@@ -25,10 +25,19 @@ func main() {
 
 	fmt.Println("Book: ", book)
 
+	//Writing a Message(marshall)
 	out, err := proto.Marshal(book)
 	if err != nil {
 		log.Fatalln("Failed to encode address book:", err)
 	}
 	fmt.Println("Marshalled book: ", out)
+
+	//Reading a Message (unmarshall)
+	sameBook := &pb.AddressBook{}
+	if err := proto.Unmarshal(out, sameBook); err != nil {
+		log.Fatalln("Failed to parse address book:", err)
+	}
+
+	fmt.Println("Same book: ", book)
 
 }
